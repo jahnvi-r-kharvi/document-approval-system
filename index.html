@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Document Approval</h2>
+
+<input id="title" placeholder="Enter document">
+<button onclick="submitDoc()">Submit</button>
+
+<ul id="list"></ul>
+
+<script>
+async function submitDoc() {
+    const title = document.getElementById("title").value;
+
+    await fetch("http://localhost:3000/submit", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({title})
+    });
+
+    loadDocs();
+}
+
+async function approve(id) {
+    await fetch(`http://localhost:3000/approve/${id}`, {
+        method: "POST"
+    });
+    loadDocs();
+}
+
+async function loadDocs() {
+    const res = await fetch("http://localhost:3000/docs");
+    const data = await res.json();
+
+    let html = "";
+    data.forEach(d => {
+        html += `<li>${d.title} - ${d.status}
+        <button onclick="approve(${d.id})">Approve</button></li>`;
+    });
+
+    document.getElementById("list").innerHTML = html;
+}
+
+loadDocs();
+</script>
+
+</body>
+</html>
