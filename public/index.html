@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Document Approval System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2>📄 Document Approval System</h2>
+
+<input id="title" placeholder="Enter document title">
+<input type="file" id="file">
+<button onclick="submitDoc()">Submit</button>
+
+<h3>Documents</h3>
+<ul id="list"></ul>
+
+<script>
+async function submitDoc() {
+    const title = document.getElementById("title").value;
+    const file = document.getElementById("file").files[0];
+
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("file", file);
+
+    await fetch("/submit", {
+        method: "POST",
+        body: formData
+    });
+
+    loadDocs();
+}
+
+async function approve(id) {
+    await fetch(`/approve/${id}`, { method: "POST" });
+    loadDocs();
+}
+
+async function reject(id) {
+    await fetch(`/reject/${id}`, { method: "POST" });
+    loadDocs();
+}
+
+async function loadDocs() {
+    const res = await fetch("/docs");
+    const data = await res.json();
+
+    let html = "";
+    data.forEach(d => {
+        html += `<li>
+            ${d.title} -
+            <a href="${d.file}" target="_blank">View</a> -
+            ${d.status}
+            <button onclick="approve(${d.id})">Approve</button>
+            <button onclick="reject(${d.id})">Reject</button>
+        </li>`;
+    });
+
+    document.getElementById("list").innerHTML = html;
+}
+
+loadDocs();
+</script>
+
+</body>
+</html>
