@@ -1,10 +1,11 @@
 const express = require("express");
 const multer = require("multer");
-
 const app = express();
-
 app.use(express.static("public"));
+app.use('/uploads',
+express.static('uploads'));
 app.use(express.json());
+
 
 // File upload setup
 const storage = multer.diskStorage({

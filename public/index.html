@@ -50,8 +50,8 @@ async function loadDocs() {
     data.forEach(d => {
         html += `<li>
             ${d.title} -
-            <a href="${d.file}" target="_blank">View</a> -
-            ${d.status}
+           <a href="/uploads/${d.file}" 
+           target="_blank">View</a> - ${d.status}
             <button onclick="approve(${d.id})">Approve</button>
             <button onclick="reject(${d.id})">Reject</button>
         </li>`;
