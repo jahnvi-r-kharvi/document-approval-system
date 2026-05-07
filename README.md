@@ -50,10 +50,10 @@ document-approval-system/
 5. Status is updated and displayed
 
 Future Enhancements
-* 🔐 User login system
-* 🗄 Database integration (MongoDB)
-* 🌐 Online deployment
-* 📱 Responsive UI
+* User login system
+* Database integration (MongoDB)
+* Online deployment
+* Responsive UI
 
 Conclusion
 This project demonstrates a simple implementation of a document approval workflow using web technologies. It improves efficiency and provides a structured system for managing document approvals.
