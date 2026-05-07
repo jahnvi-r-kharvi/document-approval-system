@@ -2,7 +2,7 @@
 
  Project URL
 The application runs locally at:
- http://localhost:3000/
+ [http://localhost:3000/](http://localhost:3000)
 
 ---
  Overview
