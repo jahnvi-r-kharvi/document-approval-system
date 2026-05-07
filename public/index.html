@@ -1,66 +1,148 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Document Approval System</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Document Approval System</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<h2>📄 Document Approval System</h2>
+<h1>📄 Document Approval System</h1>
 
-<input id="title" placeholder="Enter document title">
-<input type="file" id="file">
-<button onclick="submitDoc()">Submit</button>
+<div class="tabs">
+  <button onclick="showTab('upload')">Upload</button>
+  <button onclick="showTab('pending')">Pending</button>
+  <button onclick="showTab('approved')">Approved</button>
+</div>
 
-<h3>Documents</h3>
-<ul id="list"></ul>
+<!-- Upload -->
+<div id="upload" class="tab">
+  <h2>Upload Document</h2>
+
+  <input type="text" id="title" placeholder="Enter title">
+  <br><br>
+
+  <input type="file" id="file">
+  <br><br>
+
+  <button onclick="uploadDoc()">Submit</button>
+</div>
+
+<!-- Pending -->
+<div id="pending" class="tab" style="display:none;">
+  <h2>Pending Documents</h2>
+  <div id="pendingList"></div>
+</div>
+
+<!-- Approved -->
+<div id="approved" class="tab" style="display:none;">
+  <h2>Approved Documents</h2>
+  <div id="approvedList"></div>
+</div>
 
 <script>
-async function submitDoc() {
-    const title = document.getElementById("title").value;
-    const file = document.getElementById("file").files[0];
+function showTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.style.display = "none");
+  document.getElementById(tab).style.display = "block";
 
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("file", file);
-
-    await fetch("/submit", {
-        method: "POST",
-        body: formData
-    });
-
-    loadDocs();
+  if (tab === "pending") loadPending();
+  if (tab === "approved") loadApproved();
 }
 
-async function approve(id) {
-    await fetch(`/approve/${id}`, { method: "POST" });
-    loadDocs();
+// Upload
+function uploadDoc() {
+  const title = document.getElementById("title").value;
+  const file = document.getElementById("file").files[0];
+
+  if (!title || !file) {
+    alert("Please fill all fields");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("title", title);
+  formData.append("file", file);
+
+  fetch("/upload", {
+    method: "POST",
+    body: formData
+  })
+  .then(res => {
+    if (!res.ok) throw new Error("Upload failed");
+    return res.json();
+  })
+  .then(data => {
+    alert("Uploaded successfully");
+    console.log(data);
+  })
+  .catch(err => console.log(err));
 }
 
-async function reject(id) {
-    await fetch(`/reject/${id}`, { method: "POST" });
-    loadDocs();
-}
+// Pending
+function loadPending() {
+  fetch("/documents")
+    .then(res => res.json())
+    .then(data => {
+      let html = "";
 
-async function loadDocs() {
-    const res = await fetch("/docs");
-    const data = await res.json();
+      if (data.length === 0) {
+        html = "<p>No pending documents</p>";
+      }
 
-    let html = "";
-    data.forEach(d => {
-        html += `<li>
-            ${d.title} -
-           <a href="/uploads/${d.file}" 
-           target="_blank">View</a> - ${d.status}
+      data.forEach(d => {
+        html += `
+          <div class="card">
+            <p>${d.title}</p>
             <button onclick="approve(${d.id})">Approve</button>
             <button onclick="reject(${d.id})">Reject</button>
-        </li>`;
-    });
+          </div>
+        `;
+      });
 
-    document.getElementById("list").innerHTML = html;
+      document.getElementById("pendingList").innerHTML = html;
+    });
 }
 
-loadDocs();
+// Approved
+function loadApproved() {
+  fetch("/approved")
+    .then(res => res.json())
+    .then(data => {
+      let html = "";
+
+      if (data.length === 0) {
+        html = "<p>No approved documents</p>";
+      }
+
+      data.forEach(d => {
+        html += `
+          <div class="card">
+            <p>${d.title}</p>
+            <a href="/uploads/${d.file}" target="_blank">View</a>
+          </div>
+        `;
+      });
+
+      document.getElementById("approvedList").innerHTML = html;
+    });
+}
+
+// Approve
+function approve(id) {
+  fetch("/approve/" + id, {
+    method: "POST"
+  })
+  .then(() => loadPending());
+}
+
+// Reject
+function reject(id) {
+  fetch("/reject/" + id, {
+    method: "POST"
+  })
+  .then(() => loadPending());
+}
 </script>
 
 </body>
