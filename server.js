@@ -8,7 +8,7 @@ app.use(express.static("public"));
 app.use("/uploads", express.static("uploads"));
 app.use(express.json());
 
-// ✅ ENSURE uploads folder exists
+// ENSURE uploads folder exists
 if (!fs.existsSync("uploads")) {
   fs.mkdirSync("uploads");
 }
@@ -84,6 +84,8 @@ app.get("/", (req, res) => {
   res.send("Document Approval System Running");
 });
 // ---------------- SERVER ----------------
-app.listen(3000, () => {
-  console.log("Server running on http://localhost:3000");
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
