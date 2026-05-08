@@ -80,6 +80,9 @@ app.post("/reject/:id", (req, res) => {
 app.get("/test", (req, res) => {
   res.send("Backend working");
 });
+app.get("/", (req, res) => {
+  res.send("Document Approval System Running");
+});
 // ---------------- SERVER ----------------
 app.listen(3000, () => {
   console.log("Server running on http://localhost:3000");
